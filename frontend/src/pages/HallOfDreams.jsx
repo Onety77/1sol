@@ -20,7 +20,7 @@ function WinnerCard({ winner, i }) {
       style={{
         borderRadius: 'var(--r-xl)', padding: 'clamp(20px, 3vw, 28px)',
         display: 'flex', flexDirection: 'column', gap: 14,
-        animation: `fade-in 0.5s ease-out ${i * 0.06}s both`,
+        animation: `fade-up 0.5s ease-out ${i * 0.06}s both`,
         position: 'relative', overflow: 'hidden',
         transition: 'transform 0.25s',
         cursor: 'default',
@@ -31,7 +31,7 @@ function WinnerCard({ winner, i }) {
       {isChampion && (
         <div style={{
           position: 'absolute', top: 0, left: '15%', right: '15%', height: 1,
-          background: 'linear-gradient(90deg, transparent, rgba(251,191,36,0.9), transparent)',
+          background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.9), transparent)',
         }} />
       )}
 
@@ -41,7 +41,7 @@ function WinnerCard({ winner, i }) {
           <span style={{
             color: placeColor, fontSize: '0.72rem', fontWeight: 700,
             fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
-            textShadow: isChampion ? '0 0 16px rgba(251,191,36,0.4)' : 'none',
+            textShadow: isChampion ? '0 0 16px rgba(255,215,0,0.4)' : 'none',
           }}>
             {PLACE_LABELS[winner.place] || `#${winner.place}`}
           </span>
@@ -61,7 +61,7 @@ function WinnerCard({ winner, i }) {
         fontFamily: 'var(--font-display)', fontSize: 'clamp(0.88rem, 1.5vw, 1rem)',
         fontWeight: 700, lineHeight: 1.3,
         color: isChampion ? 'var(--crowned)' : 'var(--text)',
-        textShadow: isChampion ? '0 0 20px rgba(251,191,36,0.15)' : 'none',
+        textShadow: isChampion ? '0 0 20px rgba(255,215,0,0.15)' : 'none',
       }}>{winner.title}</h3>
 
       {/* Story */}
@@ -93,7 +93,7 @@ function WinnerCard({ winner, i }) {
           <div style={{
             width: 22, height: 22, borderRadius: '50%',
             background: `linear-gradient(135deg, hsl(${(winner.walletAddress?.charCodeAt(0) || 0) * 7 % 360},70%,55%), hsl(${(winner.walletAddress?.charCodeAt(2) || 0) * 11 % 360},70%,45%))`,
-            border: isChampion ? '1px solid rgba(251,191,36,0.3)' : 'none',
+            border: isChampion ? '1px solid rgba(255,215,0,0.3)' : 'none',
           }} />
           @{winner.username}
         </Link>
@@ -136,12 +136,12 @@ export default function HallOfDreams() {
   return (
     <div style={{
       minHeight: '100vh', paddingTop: 72, paddingBottom: 100,
-      background: 'radial-gradient(ellipse 100% 50% at 50% 0%, rgba(251,191,36,0.05) 0%, transparent 55%)',
+      background: 'radial-gradient(ellipse 100% 50% at 50% 0%, rgba(255,215,0,0.05) 0%, transparent 55%)',
     }}>
       {/* Header */}
       <div style={{ padding: 'clamp(44px, 6vw, 64px) 0 48px', textAlign: 'center' }}>
         <div className="container">
-          <div style={{ fontSize: '2.5rem', marginBottom: 16, animation: 'crown-float 4s ease-in-out infinite' }}>♛</div>
+          <div style={{ fontSize: '2.5rem', marginBottom: 16, animation: 'crown-rise 4s ease-in-out infinite' }}>♛</div>
           <p className="section-label" style={{ justifyContent: 'center', display: 'flex', marginBottom: 10 }}>
             Permanent Archive
           </p>
@@ -149,7 +149,7 @@ export default function HallOfDreams() {
             fontFamily: 'var(--font-display)',
             fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 900,
             letterSpacing: '-0.04em',
-            background: 'linear-gradient(135deg, #FBBF24, #FDE68A, #F59E0B)',
+            background: 'linear-gradient(135deg, #FFD700, #FFE566, #FF9900)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
           }}>Hall of Dreams</h1>
           <p style={{
@@ -170,7 +170,7 @@ export default function HallOfDreams() {
                 <div key={label} style={{ textAlign: 'center' }}>
                   <p style={{
                     fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 700,
-                    color: 'var(--gold)', textShadow: '0 0 20px rgba(251,191,36,0.25)',
+                    color: 'var(--gold)', textShadow: '0 0 20px rgba(255,215,0,0.25)',
                   }}>{value}</p>
                   <p className="section-label" style={{ marginTop: 4 }}>{label}</p>
                 </div>
@@ -202,7 +202,7 @@ export default function HallOfDreams() {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}>
                   <p className="section-label" style={{ color: 'var(--crowned)' }}>Champions</p>
-                  <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(251,191,36,0.2), transparent)' }} />
+                  <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(255,215,0,0.2), transparent)' }} />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 24 }}>
                   {champions.map((w, i) => <WinnerCard key={w.id} winner={w} i={i} />)}

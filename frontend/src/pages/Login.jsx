@@ -30,7 +30,7 @@ export default function Login() {
       <div style={{
         position: 'fixed', top: '40%', left: '50%', transform: 'translate(-50%, -50%)',
         width: 600, height: 600, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(167,139,250,0.06) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(191,95,255,0.06) 0%, transparent 70%)',
         pointerEvents: 'none', zIndex: 0,
       }} />
 
@@ -41,11 +41,11 @@ export default function Login() {
           <div style={{
             width: 56, height: 56, borderRadius: '50%',
             margin: '0 auto 16px',
-            background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 60%, #A78BFA 100%)',
+            background: 'linear-gradient(135deg, #FFD700 0%, #FF9900 60%, #BF5FFF 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '1.5rem', fontWeight: 900, color: '#030308',
             fontFamily: 'var(--font-display)',
-            boxShadow: '0 0 32px rgba(251,191,36,0.35)',
+            boxShadow: '0 0 32px rgba(255,215,0,0.35)',
           }}>1</div>
           <h1 style={{
             fontFamily: 'var(--font-display)', fontSize: '0.85rem',
@@ -68,7 +68,7 @@ export default function Login() {
           {/* Top accent */}
           <div style={{
             position: 'absolute', top: 0, left: '20%', right: '20%', height: 1,
-            background: 'linear-gradient(90deg, transparent, rgba(251,191,36,0.4), transparent)',
+            background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.4), transparent)',
           }} />
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -99,8 +99,8 @@ export default function Login() {
 
             {error && (
               <div style={{
-                background: 'rgba(244,63,94,0.08)',
-                border: '1px solid rgba(244,63,94,0.25)',
+                background: 'rgba(255,31,90,0.08)',
+                border: '1px solid rgba(255,31,90,0.25)',
                 borderRadius: 'var(--r-md)', padding: '10px 14px',
                 fontSize: '0.82rem', color: 'var(--fading)',
               }}>{error}</div>

@@ -32,29 +32,29 @@ function TopDreamHero({ dream, myBeliefs, onBelief }) {
       background: 'linear-gradient(135deg, rgba(30,20,5,0.96) 0%, rgba(15,10,35,0.96) 100%)',
       padding: 'clamp(28px, 4vw, 48px)',
       overflow: 'hidden',
-      animation: 'breathe-crowned 3s ease-in-out infinite',
+      animation: 'crowned-breathe 3s ease-in-out infinite',
     }}>
       {/* Crown corona */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, height: 2,
-        background: 'linear-gradient(90deg, transparent, rgba(251,191,36,0.8), rgba(251,191,36,1), rgba(251,191,36,0.8), transparent)',
+        background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.8), rgba(255,215,0,1), rgba(255,215,0,0.8), transparent)',
       }} />
       <div style={{
         position: 'absolute', top: 0, left: '10%', right: '10%', height: 80,
-        background: 'radial-gradient(ellipse, rgba(251,191,36,0.08) 0%, transparent 70%)',
+        background: 'radial-gradient(ellipse, rgba(255,215,0,0.08) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{
-            background: 'linear-gradient(135deg, #FBBF24, #F59E0B)',
-            color: '#030308',
+            background: 'linear-gradient(135deg, #FFD700, #FF9900)',
+            color: '#000',
             fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '0.78rem',
             padding: '5px 14px', borderRadius: 'var(--r-full)',
             letterSpacing: '0.04em',
-            boxShadow: '0 0 20px rgba(251,191,36,0.4)',
-            animation: 'crown-float 3.5s ease-in-out infinite',
+            boxShadow: '0 0 20px rgba(255,215,0,0.4)',
+            animation: 'crown-rise 3.5s ease-in-out infinite',
           }}>♛ #1 DREAM</div>
           <span className={`tag mood-${dream.mood}`}>{MOOD_EMOJI[dream.mood]} {dream.mood}</span>
         </div>
@@ -69,7 +69,7 @@ function TopDreamHero({ dream, myBeliefs, onBelief }) {
         fontSize: 'clamp(1.4rem, 3vw, 2.2rem)',
         lineHeight: 1.18, letterSpacing: '-0.025em',
         color: 'var(--crowned)', marginBottom: 18,
-        textShadow: '0 0 40px rgba(251,191,36,0.2)',
+        textShadow: '0 0 40px rgba(255,215,0,0.2)',
       }}>{dream.title}</h2>
 
       <p style={{
@@ -80,18 +80,18 @@ function TopDreamHero({ dream, myBeliefs, onBelief }) {
       {dream.proofImageUrl && (
         <img src={dream.proofImageUrl} alt="proof" style={{
           maxHeight: 160, borderRadius: 'var(--r-md)', marginBottom: 24,
-          objectFit: 'cover', border: '1px solid rgba(251,191,36,0.15)',
+          objectFit: 'cover', border: '1px solid rgba(255,215,0,0.15)',
         }} onError={e => { e.target.style.display = 'none'; }} />
       )}
 
-      <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap', paddingTop: 16, borderTop: '1px solid rgba(251,191,36,0.1)' }}>
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap', paddingTop: 16, borderTop: '1px solid rgba(255,215,0,0.1)' }}>
         <Link to={`/profile/${dream.walletAddress}`} style={{
           display: 'flex', alignItems: 'center', gap: 10, color: 'var(--text-2)', fontSize: '0.9rem',
         }}>
           <div style={{
             width: 32, height: 32, borderRadius: '50%',
             background: `linear-gradient(135deg, hsl(${(dream.walletAddress?.charCodeAt(0) || 0) * 7 % 360},70%,55%), hsl(${(dream.walletAddress?.charCodeAt(2) || 0) * 11 % 360},70%,45%))`,
-            border: '2px solid rgba(251,191,36,0.3)',
+            border: '2px solid rgba(255,215,0,0.3)',
           }} />
           @{dream.username}
         </Link>
@@ -150,8 +150,8 @@ export default function Arena() {
     <div style={{
       minHeight: '100vh', paddingTop: 72, paddingBottom: 100,
       background: isFinalHour
-        ? 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(244,63,94,0.07) 0%, transparent 60%)'
-        : 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(251,191,36,0.04) 0%, transparent 60%)',
+        ? 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,31,90,0.07) 0%, transparent 60%)'
+        : 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,215,0,0.04) 0%, transparent 60%)',
     }}>
 
       {/* Header */}
@@ -161,13 +161,13 @@ export default function Arena() {
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               marginBottom: 20, padding: '7px 18px',
-              background: 'rgba(244,63,94,0.1)',
-              border: '1px solid rgba(244,63,94,0.4)',
+              background: 'rgba(255,31,90,0.1)',
+              border: '1px solid rgba(255,31,90,0.4)',
               borderRadius: 'var(--r-full)', fontSize: '0.78rem',
               color: 'var(--fading)', fontWeight: 700, letterSpacing: '0.05em',
-              animation: 'breathe-fading 1.5s ease-in-out infinite',
+              animation: 'fading-breathe 1.5s ease-in-out infinite',
             }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--fading)', animation: 'glow-pulse 1s ease-in-out infinite' }} />
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--fading)', animation: 'blink 1s ease-in-out infinite' }} />
               FINAL HOUR — Beliefs locking soon
             </div>
           )}
@@ -196,7 +196,7 @@ export default function Arena() {
               <p className="section-label" style={{ marginBottom: 4 }}>Prize Pool</p>
               <p style={{
                 fontFamily: 'var(--font-display)', fontSize: '2rem', fontWeight: 700,
-                color: 'var(--gold)', textShadow: '0 0 24px rgba(251,191,36,0.3)',
+                color: 'var(--gold)', textShadow: '0 0 24px rgba(255,215,0,0.3)',
               }}>◎ {potSOL.toFixed(2)}</p>
             </div>
             <div style={{ width: 1, background: 'rgba(255,255,255,0.07)' }} />

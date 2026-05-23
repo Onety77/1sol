@@ -8,7 +8,7 @@ function StatCard({ label, value, color = 'var(--text)', mono = false, i = 0 }) 
       style={{
         padding: 'clamp(18px, 3vw, 24px)',
         textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 8,
-        animation: `fade-in 0.45s ease-out ${i * 0.05}s both`,
+        animation: `fade-up 0.45s ease-out ${i * 0.05}s both`,
         transition: 'transform 0.2s, box-shadow 0.2s',
       }}
       onMouseEnter={e => {
@@ -55,7 +55,7 @@ export default function WishingWell() {
   return (
     <div style={{
       minHeight: '100vh', paddingTop: 72, paddingBottom: 100,
-      background: 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(34,211,238,0.04) 0%, transparent 55%)',
+      background: 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0,255,209,0.04) 0%, transparent 55%)',
     }}>
 
       {/* Header */}
@@ -80,16 +80,16 @@ export default function WishingWell() {
         {/* Current pot — hero orb */}
         <div style={{
           position: 'relative',
-          background: 'linear-gradient(135deg, rgba(10,35,30,0.95) 0%, rgba(5,15,30,0.95) 100%)',
-          border: '1px solid rgba(34,211,238,0.2)',
+          background: 'linear-gradient(135deg, rgba(0,20,16,0.95) 0%, rgba(5,15,30,0.95) 100%)',
+          border: '1px solid rgba(0,255,209,0.2)',
           borderRadius: 'var(--r-xl)', padding: 'clamp(36px, 5vw, 56px)',
           textAlign: 'center', marginBottom: 24,
-          animation: 'breathe-alive 4s ease-in-out infinite',
+          animation: 'alive-breathe 4s ease-in-out infinite',
           overflow: 'hidden',
         }}>
           <div style={{
             position: 'absolute', top: 0, left: '20%', right: '20%', height: 1,
-            background: 'linear-gradient(90deg, transparent, rgba(34,211,238,0.8), transparent)',
+            background: 'linear-gradient(90deg, transparent, rgba(0,255,209,0.8), transparent)',
           }} />
 
           {/* Glowing orb behind number */}
@@ -97,7 +97,7 @@ export default function WishingWell() {
             position: 'absolute', top: '50%', left: '50%',
             transform: 'translate(-50%, -50%)',
             width: 300, height: 300, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(34,211,238,0.06) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(0,255,209,0.06) 0%, transparent 70%)',
             pointerEvents: 'none',
           }} />
 
@@ -110,7 +110,7 @@ export default function WishingWell() {
               fontFamily: 'var(--font-display)',
               fontSize: 'clamp(3.5rem, 10vw, 7rem)', fontWeight: 900,
               color: 'var(--alive)', lineHeight: 1,
-              textShadow: '0 0 60px rgba(34,211,238,0.4)',
+              textShadow: '0 0 60px rgba(0,255,209,0.4)',
             }}>{potSOL.toFixed(3)}</span>
             <span style={{
               fontFamily: 'var(--font-mono)', fontSize: 'clamp(1rem, 2vw, 1.6rem)',
@@ -155,10 +155,10 @@ export default function WishingWell() {
                     width: `${pct}%`, transition: 'width 1s linear',
                     background: isUrgent
                       ? 'linear-gradient(90deg, var(--fading), #FF6B8A)'
-                      : 'linear-gradient(90deg, var(--alive), #22D3EE)',
+                      : 'linear-gradient(90deg, var(--alive), #00D4B8)',
                     boxShadow: isUrgent
-                      ? '0 0 12px rgba(244,63,94,0.5)'
-                      : '0 0 12px rgba(34,211,238,0.4)',
+                      ? '0 0 12px rgba(255,31,90,0.5)'
+                      : '0 0 12px rgba(0,255,209,0.4)',
                   }} />
                 </div>
               </div>

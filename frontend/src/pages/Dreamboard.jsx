@@ -78,8 +78,8 @@ export default function Dreamboard() {
             <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
               {currentRound && (
                 <div style={{
-                  background: 'rgba(251,191,36,0.08)',
-                  border: '1px solid rgba(251,191,36,0.2)',
+                  background: 'rgba(255,215,0,0.08)',
+                  border: '1px solid rgba(255,215,0,0.2)',
                   borderRadius: 'var(--r-full)',
                   padding: '7px 16px',
                   fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: 'var(--gold)',
@@ -133,7 +133,7 @@ export default function Dreamboard() {
                   <div key={i} style={{
                     width: 9, height: 9, borderRadius: '50%',
                     background: i < beliefsUsed ? 'var(--gold)' : 'rgba(255,255,255,0.08)',
-                    boxShadow: i < beliefsUsed ? '0 0 6px rgba(251,191,36,0.5)' : 'none',
+                    boxShadow: i < beliefsUsed ? '0 0 6px rgba(255,215,0,0.5)' : 'none',
                     transition: 'all 0.3s',
                   }} />
                 ))}
@@ -179,7 +179,7 @@ export default function Dreamboard() {
             gap: 18, alignItems: 'start',
           }}>
             {dreamsList.map((dream, i) => (
-              <div key={dream.id} style={{ animation: `fade-in 0.4s ease-out ${i * 0.04}s both` }}>
+              <div key={dream.id} style={{ animation: `fade-up 0.4s ease-out ${i * 0.04}s both` }}>
                 <DreamCard
                   dream={dream}
                   myBeliefs={myBeliefs}

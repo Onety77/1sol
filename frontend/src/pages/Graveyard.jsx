@@ -23,7 +23,7 @@ function GraveCard({ dream, i }) {
           ? undefined
           : '1px solid rgba(255,255,255,0.035)',
         display: 'flex', flexDirection: 'column', gap: 10,
-        animation: `fade-in 0.45s ease-out ${i * 0.04}s both`,
+        animation: `fade-up 0.45s ease-out ${i * 0.04}s both`,
         filter: isResurrected ? 'none' : 'grayscale(60%) brightness(0.7)',
         transition: 'filter 0.3s, transform 0.25s',
       }}
@@ -43,8 +43,8 @@ function GraveCard({ dream, i }) {
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
           {isResurrected ? (
             <span style={{
-              background: 'rgba(167,139,250,0.1)', color: 'var(--resurrected)',
-              border: '1px solid rgba(167,139,250,0.25)',
+              background: 'rgba(191,95,255,0.1)', color: 'var(--resurrected)',
+              border: '1px solid rgba(191,95,255,0.25)',
               borderRadius: 'var(--r-full)', padding: '2px 10px',
               fontSize: '0.68rem', fontWeight: 700,
             }}>⚡ Resurrected</span>
@@ -92,7 +92,7 @@ function GraveCard({ dream, i }) {
       {isResurrected && (
         <p style={{
           fontSize: '0.7rem', color: 'var(--resurrected)',
-          borderTop: '1px solid rgba(167,139,250,0.15)', paddingTop: 8,
+          borderTop: '1px solid rgba(191,95,255,0.15)', paddingTop: 8,
         }}>
           The dreamer returned. Competing again next round.
         </p>
@@ -152,7 +152,7 @@ export default function Graveyard() {
         <div style={{
           position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
           width: '80%', height: 120,
-          background: 'radial-gradient(ellipse, rgba(167,139,250,0.04) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse, rgba(191,95,255,0.04) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
 
@@ -224,7 +224,7 @@ export default function Graveyard() {
                     fontFamily: 'var(--font-mono)', fontSize: '0.62rem',
                     color: 'var(--resurrected)', letterSpacing: '0.15em', textTransform: 'uppercase',
                   }}>⚡ They came back</p>
-                  <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(167,139,250,0.2), transparent)' }} />
+                  <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(191,95,255,0.2), transparent)' }} />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
                   {resurrected.map((d, i) => <GraveCard key={d.id} dream={d} i={i} />)}

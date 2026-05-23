@@ -55,7 +55,7 @@ export default function Signup() {
       <div style={{
         position: 'fixed', top: '40%', left: '50%', transform: 'translate(-50%, -50%)',
         width: 700, height: 500, borderRadius: '50%',
-        background: 'radial-gradient(ellipse, rgba(251,191,36,0.04) 0%, transparent 70%)',
+        background: 'radial-gradient(ellipse, rgba(255,215,0,0.04) 0%, transparent 70%)',
         pointerEvents: 'none', zIndex: 0,
       }} />
 
@@ -66,10 +66,10 @@ export default function Signup() {
           <div style={{
             width: 52, height: 52, borderRadius: '50%',
             margin: '0 auto 14px',
-            background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 60%, #A78BFA 100%)',
+            background: 'linear-gradient(135deg, #FFD700 0%, #FF9900 60%, #BF5FFF 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '1.3rem', fontWeight: 900, color: '#030308', fontFamily: 'var(--font-display)',
-            boxShadow: '0 0 28px rgba(251,191,36,0.35)',
+            boxShadow: '0 0 28px rgba(255,215,0,0.35)',
           }}>1</div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.08em' }}>
             JOIN THE DREAM
@@ -87,16 +87,16 @@ export default function Signup() {
                 <div style={{
                   width: 28, height: 28, borderRadius: '50%',
                   background: i < step
-                    ? 'linear-gradient(135deg, var(--alive), #22D3EE)'
+                    ? 'linear-gradient(135deg, var(--alive), #00D4B8)'
                     : i === step
-                      ? 'linear-gradient(135deg, #FBBF24, #F59E0B)'
+                      ? 'linear-gradient(135deg, #FFD700, #FF9900)'
                       : 'rgba(255,255,255,0.05)',
-                  border: `1px solid ${i === step ? 'rgba(251,191,36,0.4)' : i < step ? 'rgba(34,211,238,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                  border: `1px solid ${i === step ? 'rgba(255,215,0,0.4)' : i < step ? 'rgba(0,255,209,0.4)' : 'rgba(255,255,255,0.08)'}`,
                   color: i <= step ? '#030308' : 'var(--text-3)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '0.78rem', fontWeight: 700,
                   transition: 'all 0.35s cubic-bezier(0.34,1.56,0.64,1)',
-                  boxShadow: i === step ? '0 0 16px rgba(251,191,36,0.3)' : 'none',
+                  boxShadow: i === step ? '0 0 16px rgba(255,215,0,0.3)' : 'none',
                 }}>
                   {i < step ? '✓' : i + 1}
                 </div>
@@ -107,7 +107,7 @@ export default function Signup() {
               {i < STEPS.length - 1 && (
                 <div style={{
                   width: 48, height: 1, margin: '0 4px', marginTop: -16,
-                  background: i < step ? 'rgba(34,211,238,0.3)' : 'rgba(255,255,255,0.06)',
+                  background: i < step ? 'rgba(0,255,209,0.3)' : 'rgba(255,255,255,0.06)',
                   transition: 'background 0.3s',
                 }} />
               )}
@@ -126,12 +126,12 @@ export default function Signup() {
         }}>
           <div style={{
             position: 'absolute', top: 0, left: '20%', right: '20%', height: 1,
-            background: 'linear-gradient(90deg, transparent, rgba(251,191,36,0.35), transparent)',
+            background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.35), transparent)',
           }} />
 
           {/* Step 0: Account */}
           {step === 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, animation: 'fade-in 0.3s ease-out' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, animation: 'fade-up 0.3s ease-out' }}>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '0.9rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
                 Create your account
               </h2>
@@ -177,7 +177,7 @@ export default function Signup() {
 
           {/* Step 1: Wallet */}
           {step === 1 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, animation: 'fade-in 0.3s ease-out' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, animation: 'fade-up 0.3s ease-out' }}>
               <div>
                 <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '0.9rem', fontWeight: 700, marginBottom: 6 }}>
                   Connect your wallet
@@ -189,7 +189,7 @@ export default function Signup() {
               </div>
 
               <div style={{
-                background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.2)',
+                background: 'rgba(255,215,0,0.06)', border: '1px solid rgba(255,215,0,0.2)',
                 borderRadius: 'var(--r-md)', padding: '14px 16px',
               }}>
                 <p style={{ fontSize: '0.8rem', color: 'var(--gold)', fontWeight: 600, marginBottom: 4 }}>
@@ -213,7 +213,7 @@ export default function Signup() {
               </div>
 
               {error && (
-                <div style={{ background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.25)', borderRadius: 'var(--r-md)', padding: '10px 14px', fontSize: '0.82rem', color: 'var(--fading)' }}>
+                <div style={{ background: 'rgba(255,31,90,0.08)', border: '1px solid rgba(255,31,90,0.25)', borderRadius: 'var(--r-md)', padding: '10px 14px', fontSize: '0.82rem', color: 'var(--fading)' }}>
                   {error}
                 </div>
               )}
@@ -234,14 +234,14 @@ export default function Signup() {
 
           {/* Step 2: Ready */}
           {step === 2 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, animation: 'fade-in 0.3s ease-out' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, animation: 'fade-up 0.3s ease-out' }}>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '0.9rem', fontWeight: 700 }}>
                 Ready to dream?
               </h2>
 
               {walletStatus?.qualified && (
                 <div style={{
-                  background: 'rgba(34,211,238,0.06)', border: '1px solid rgba(34,211,238,0.2)',
+                  background: 'rgba(0,255,209,0.06)', border: '1px solid rgba(0,255,209,0.2)',
                   borderRadius: 'var(--r-md)', padding: 16,
                 }}>
                   <p style={{ color: 'var(--alive)', fontWeight: 700, marginBottom: 10, fontSize: '0.88rem' }}>✓ Wallet Verified</p>
@@ -274,7 +274,7 @@ export default function Signup() {
               </div>
 
               {error && (
-                <div style={{ background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.25)', borderRadius: 'var(--r-md)', padding: '10px 14px', fontSize: '0.82rem', color: 'var(--fading)' }}>
+                <div style={{ background: 'rgba(255,31,90,0.08)', border: '1px solid rgba(255,31,90,0.25)', borderRadius: 'var(--r-md)', padding: '10px 14px', fontSize: '0.82rem', color: 'var(--fading)' }}>
                   {error}
                 </div>
               )}

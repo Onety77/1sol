@@ -3,13 +3,18 @@ import Modal from '../ui/Modal';
 import { dreams as dreamsApi } from '../../services/api';
 
 const MOODS = ['Serious', 'Funny', 'Delusional', 'Beautiful', 'Degenerate', 'Impossible', 'Unfinished'];
-const MOOD_EMOJI = { Serious: '🎯', Funny: '😂', Delusional: '🌀', Beautiful: '✨', Degenerate: '🔥', Impossible: '🚀', Unfinished: '⏳' };
-
-const MOOD_COLORS = {
-  Serious: 'rgba(34,211,238,0.15)',    Funny: 'rgba(251,191,36,0.15)',
-  Delusional: 'rgba(167,139,250,0.15)', Beautiful: 'rgba(103,232,249,0.15)',
-  Degenerate: 'rgba(244,63,94,0.15)',   Impossible: 'rgba(251,146,60,0.15)',
-  Unfinished: 'rgba(112,112,168,0.15)',
+const MOOD_EMOJI = { Serious:'🎯', Funny:'😂', Delusional:'🌀', Beautiful:'✨', Degenerate:'🔥', Impossible:'🚀', Unfinished:'⏳' };
+const MOOD_ACCENT = {
+  Serious:'rgba(0,255,209,0.15)',    Funny:'rgba(255,215,0,0.15)',
+  Delusional:'rgba(191,95,255,0.15)', Beautiful:'rgba(0,240,255,0.15)',
+  Degenerate:'rgba(255,31,90,0.15)', Impossible:'rgba(255,110,0,0.15)',
+  Unfinished:'rgba(120,120,160,0.15)',
+};
+const MOOD_BORDER = {
+  Serious:'rgba(0,255,209,0.35)',    Funny:'rgba(255,215,0,0.35)',
+  Delusional:'rgba(191,95,255,0.35)', Beautiful:'rgba(0,240,255,0.35)',
+  Degenerate:'rgba(255,31,90,0.35)', Impossible:'rgba(255,110,0,0.35)',
+  Unfinished:'rgba(120,120,160,0.35)',
 };
 
 export default function PostDreamModal({ open, onClose, onPosted }) {
@@ -19,7 +24,6 @@ export default function PostDreamModal({ open, onClose, onPosted }) {
 
   const wordCount = form.title.trim() ? form.title.trim().split(/\s+/).length : 0;
   const charCount = form.story.length;
-  const charWarning = charCount > 260;
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -42,17 +46,16 @@ export default function PostDreamModal({ open, onClose, onPosted }) {
         <div>
           <label className="input-label">
             Dream Title
-            <span style={{ color: wordCount > 18 ? 'var(--fading)' : 'var(--text-3)', marginLeft: 8, fontFamily: 'var(--font-mono)' }}>
-              {wordCount}/20 words
-            </span>
+            <span style={{
+              marginLeft: 8, fontFamily: 'var(--font-mono)',
+              color: wordCount > 18 ? 'var(--fading)' : 'var(--text-3)',
+            }}>{wordCount}/20 words</span>
           </label>
           <input
-            className="input"
+            className="input" autoFocus required maxLength={200}
             placeholder="What exactly is your dream? Be specific."
             value={form.title}
             onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-            required maxLength={200}
-            autoFocus
           />
           <p className="input-hint">Your title locks after 30 minutes. Choose it carefully.</p>
         </div>
@@ -60,17 +63,16 @@ export default function PostDreamModal({ open, onClose, onPosted }) {
         <div>
           <label className="input-label">
             Your Story
-            <span style={{ color: charWarning ? 'var(--fading)' : 'var(--text-3)', marginLeft: 8, fontFamily: 'var(--font-mono)' }}>
-              {charCount}/280
-            </span>
+            <span style={{
+              marginLeft: 8, fontFamily: 'var(--font-mono)',
+              color: charCount > 260 ? 'var(--fading)' : 'var(--text-3)',
+            }}>{charCount}/280</span>
           </label>
           <textarea
-            className="input"
+            className="input" required maxLength={280} rows={4}
             placeholder="Why this dream. Why you. Why now. Make people believe."
             value={form.story}
             onChange={e => setForm(f => ({ ...f, story: e.target.value }))}
-            required maxLength={280}
-            rows={4}
             style={{ resize: 'vertical', minHeight: 96 }}
           />
         </div>
@@ -79,19 +81,14 @@ export default function PostDreamModal({ open, onClose, onPosted }) {
           <label className="input-label">Mood</label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {MOODS.map(m => (
-              <button
-                key={m} type="button"
-                onClick={() => setForm(f => ({ ...f, mood: m }))}
-                style={{
-                  padding: '7px 14px', borderRadius: 'var(--r-full)',
-                  border: `1px solid ${form.mood === m ? 'rgba(251,191,36,0.5)' : 'rgba(255,255,255,0.08)'}`,
-                  background: form.mood === m ? MOOD_COLORS[m] : 'rgba(255,255,255,0.03)',
-                  color: form.mood === m ? 'var(--text)' : 'var(--text-2)',
-                  fontSize: '0.8rem', fontWeight: 500,
-                  transition: 'all 0.15s', cursor: 'pointer',
-                  transform: form.mood === m ? 'scale(1.04)' : 'scale(1)',
-                }}
-              >{MOOD_EMOJI[m]} {m}</button>
+              <button key={m} type="button" onClick={() => setForm(f => ({ ...f, mood: m }))} style={{
+                padding: '7px 14px', borderRadius: 'var(--r-full)', cursor: 'pointer',
+                background: form.mood === m ? MOOD_ACCENT[m] : 'rgba(255,255,255,0.03)',
+                border: `1px solid ${form.mood === m ? MOOD_BORDER[m] : 'rgba(255,255,255,0.08)'}`,
+                color: form.mood === m ? 'var(--text)' : 'var(--text-2)',
+                fontSize: '0.8rem', fontWeight: 500, transition: 'all 0.15s',
+                transform: form.mood === m ? 'scale(1.06)' : 'scale(1)',
+              }}>{MOOD_EMOJI[m]} {m}</button>
             ))}
           </div>
         </div>
@@ -111,13 +108,13 @@ export default function PostDreamModal({ open, onClose, onPosted }) {
 
         {error && (
           <div style={{
-            background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.3)',
+            background: 'rgba(255,31,90,0.08)', border: '1px solid rgba(255,31,90,0.25)',
             borderRadius: 'var(--r-md)', padding: '10px 14px',
-            fontSize: '0.83rem', color: 'var(--fading)',
+            fontSize: '0.82rem', color: 'var(--fading)',
           }}>{error}</div>
         )}
 
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
           <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
           <button type="submit" className="btn btn-primary" disabled={loading || !form.mood}>
             {loading ? 'Posting...' : 'Post My Dream'}
