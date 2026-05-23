@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom';
 import { beliefs as beliefApi } from '../../services/api';
 import { useAuthStore } from '../../store/authStore';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
-const STATE_LABELS = {
-  alive: { label: 'Alive', color: 'var(--mint)' },
-  fading: { label: 'Fading', color: 'var(--coral)' },
-  grey: { label: 'Faded', color: 'var(--text-3)' },
-  resurrected: { label: 'Resurrected', color: 'var(--purple)' },
-  crowned: { label: 'Crowned', color: 'var(--gold)' },
+const STATE_META = {
+  alive:       { label: 'Alive',       color: 'var(--alive)',       icon: '◉' },
+  fading:      { label: 'Fading',      color: 'var(--fading)',      icon: '⚠' },
+  grey:        { label: 'Faded',       color: 'var(--text-3)',      icon: '✕' },
+  resurrected: { label: 'Resurrected', color: 'var(--resurrected)', icon: '⚡' },
+  crowned:     { label: 'Crowned',     color: 'var(--crowned)',     icon: '♛' },
 };
 
 const MOOD_EMOJI = {
@@ -16,14 +16,23 @@ const MOOD_EMOJI = {
   Degenerate: '🔥', Impossible: '🚀', Unfinished: '⏳',
 };
 
+const RANK_STYLE = {
+  1: { bg: 'linear-gradient(135deg,#FBBF24,#F59E0B)', color: '#030308', glow: 'rgba(251,191,36,0.5)' },
+  2: { bg: 'linear-gradient(135deg,#C0C0D0,#A0A0B0)', color: '#030308', glow: 'rgba(192,192,208,0.4)' },
+  3: { bg: 'linear-gradient(135deg,#CD7F32,#A0622A)', color: '#fff',    glow: 'rgba(205,127,50,0.4)' },
+};
+
 export default function DreamCard({ dream, myBeliefs = [], onBelief, rank, compact = false }) {
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [localCount, setLocalCount] = useState(dream.beliefCount || 0);
   const [believed, setBelieved] = useState(myBeliefs.includes(dream.id));
+  const cardRef = useRef(null);
 
   const state = dream.state || 'alive';
-  const stateInfo = STATE_LABELS[state] || STATE_LABELS.alive;
+  const meta = STATE_META[state] || STATE_META.alive;
+  const isOwn = user?.userId === dream.userId;
+  const canBelieve = user && !isOwn && !believed && state !== 'grey';
 
   const handleBelieve = async e => {
     e.preventDefault();
@@ -39,59 +48,94 @@ export default function DreamCard({ dream, myBeliefs = [], onBelief, rank, compa
     } finally { setLoading(false); }
   };
 
-  const isOwn = user?.userId === dream.userId;
-  const canBelieve = user && !isOwn && !believed && state !== 'grey';
+  const handleMouseMove = e => {
+    if (!cardRef.current || compact) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    cardRef.current.style.setProperty('--rx', `${(-y * 6).toFixed(2)}`);
+    cardRef.current.style.setProperty('--ry', `${(x * 6).toFixed(2)}`);
+  };
+
+  const handleMouseLeave = () => {
+    if (!cardRef.current) return;
+    cardRef.current.style.setProperty('--rx', '0');
+    cardRef.current.style.setProperty('--ry', '0');
+  };
+
+  const rankInfo = RANK_STYLE[rank];
 
   return (
     <div
-      className={`card dream-${state} fade-in`}
+      ref={cardRef}
+      className={`glass card-3d dc-${state} fade-in`}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       style={{
-        background: state === 'grey' ? '#0A0A1E' : state === 'crowned' ? 'linear-gradient(135deg, rgba(26,18,4,0.95), rgba(18,18,58,0.95))' : 'var(--surface)',
         padding: compact ? '16px' : '22px',
-        position: 'relative', display: 'flex', flexDirection: 'column', gap: 12,
-        transition: 'transform 0.2s',
-        cursor: 'pointer',
+        position: 'relative', display: 'flex', flexDirection: 'column', gap: compact ? 10 : 14,
+        borderRadius: 'var(--r-lg)',
+        cursor: 'default',
+        overflow: 'hidden',
       }}
-      onMouseEnter={e => { if (state !== 'grey') e.currentTarget.style.transform = 'translateY(-2px)'; }}
-      onMouseLeave={e => e.currentTarget.style.transform = ''}
     >
+      {/* Subtle inner shimmer top edge */}
+      <div style={{
+        position: 'absolute', top: 0, left: '20%', right: '20%', height: 1,
+        background: `linear-gradient(90deg, transparent, ${meta.color}40, transparent)`,
+        pointerEvents: 'none',
+      }} />
+
       {/* Rank badge */}
-      {rank !== undefined && (
+      {rank !== undefined && rankInfo && (
         <div style={{
-          position: 'absolute', top: -10, left: -10,
-          width: 32, height: 32, borderRadius: '50%',
-          background: rank === 1 ? 'var(--gold)' : rank === 2 ? '#C0C0C0' : '#CD7F32',
-          color: rank === 1 ? 'var(--void)' : '#fff',
-          fontFamily: 'var(--font-display)', fontSize: '0.75rem', fontWeight: 700,
+          position: 'absolute', top: -8, left: -8, zIndex: 2,
+          width: 30, height: 30, borderRadius: '50%',
+          background: rankInfo.bg,
+          color: rankInfo.color,
+          fontFamily: 'var(--font-display)', fontSize: '0.7rem', fontWeight: 900,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: rank === 1 ? '0 0 16px rgba(255,209,102,0.5)' : 'none',
-          zIndex: 2,
+          boxShadow: `0 0 12px ${rankInfo.glow}`,
+        }}>{rank}</div>
+      )}
+      {rank !== undefined && rank > 3 && (
+        <div style={{
+          position: 'absolute', top: -8, left: -8, zIndex: 2,
+          width: 28, height: 28, borderRadius: '50%',
+          background: 'rgba(255,255,255,0.06)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          color: 'var(--text-3)',
+          fontFamily: 'var(--font-mono)', fontSize: '0.65rem', fontWeight: 700,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>#{rank}</div>
       )}
 
-      {/* Header */}
+      {/* Header row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-          <span className={`tag mood-${dream.mood}`} style={{ fontSize: '0.7rem' }}>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+          <span className={`tag mood-${dream.mood}`} style={{ fontSize: '0.65rem' }}>
             {MOOD_EMOJI[dream.mood]} {dream.mood}
           </span>
-          <span style={{ fontSize: '0.7rem', color: stateInfo.color, fontWeight: 600 }}>
-            {state === 'crowned' ? '👑' : state === 'resurrected' ? '⚡' : state === 'grey' ? '💀' : state === 'fading' ? '⚠️' : '●'} {stateInfo.label}
+          <span style={{
+            fontSize: '0.65rem', color: meta.color, fontWeight: 700,
+            fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: 3,
+          }}>
+            {meta.icon} {meta.label}
           </span>
         </div>
-        {/* Proof badges */}
-        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-          {dream.proofImageUrl && <span title="Photo proof" style={{ fontSize: '0.75rem' }}>📸</span>}
-          {dream.proofLink && <span title="Link proof" style={{ fontSize: '0.75rem' }}>🔗</span>}
+        <div style={{ display: 'flex', gap: 6, flexShrink: 0, opacity: 0.7 }}>
+          {dream.proofImageUrl && <span style={{ fontSize: '0.75rem' }}>📸</span>}
+          {dream.proofLink && <span style={{ fontSize: '0.75rem' }}>🔗</span>}
         </div>
       </div>
 
       {/* Title */}
       <h3 style={{
         fontFamily: 'var(--font-display)', fontWeight: 700,
-        fontSize: compact ? '0.88rem' : '1rem',
-        lineHeight: 1.3, color: state === 'grey' ? 'var(--text-3)' : 'var(--text)',
-        zIndex: 1, position: 'relative',
+        fontSize: compact ? '0.82rem' : '0.95rem',
+        lineHeight: 1.3,
+        color: state === 'grey' ? 'var(--text-3)' : state === 'crowned' ? 'var(--crowned)' : 'var(--text)',
+        zIndex: 1,
       }}>
         {dream.title}
       </h3>
@@ -99,56 +143,64 @@ export default function DreamCard({ dream, myBeliefs = [], onBelief, rank, compa
       {/* Story */}
       {!compact && (
         <p style={{
-          fontSize: '0.85rem', color: state === 'grey' ? 'var(--text-3)' : 'var(--text-2)',
-          lineHeight: 1.55, zIndex: 1, position: 'relative',
+          fontSize: '0.83rem', color: state === 'grey' ? 'var(--text-3)' : 'var(--text-2)',
+          lineHeight: 1.6, zIndex: 1,
+          display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
         }}>
           {dream.story}
         </p>
       )}
 
-      {/* Grey state message */}
+      {/* Grey message */}
       {state === 'grey' && (
         <p style={{
-          fontSize: '0.75rem', color: 'var(--text-3)', fontStyle: 'italic',
-          borderTop: '1px solid #1A1A2A', paddingTop: 8, zIndex: 1, position: 'relative',
+          fontSize: '0.72rem', color: 'var(--text-3)', fontStyle: 'italic',
+          borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 8,
         }}>
-          This dream lost color because the dreamer sold.
+          This dream lost color. The dreamer sold.
         </p>
       )}
 
       {/* Footer */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', zIndex: 1, position: 'relative' }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        marginTop: 'auto', paddingTop: 10,
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+      }}>
         <Link
           to={`/profile/${dream.walletAddress}`}
           onClick={e => e.stopPropagation()}
-          style={{ display: 'flex', alignItems: 'center', gap: 7, color: 'var(--text-3)', fontSize: '0.78rem' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 7, color: 'var(--text-3)', fontSize: '0.76rem' }}
+          onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-2)'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-3)'; }}
         >
           <div style={{
-            width: 20, height: 20, borderRadius: '50%',
-            background: `linear-gradient(135deg, hsl(${dream.walletAddress?.charCodeAt(0) * 7 % 360},70%,50%), hsl(${dream.walletAddress?.charCodeAt(2) * 11 % 360},70%,40%))`,
+            width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
+            background: `linear-gradient(135deg, hsl(${(dream.walletAddress?.charCodeAt(0) || 0) * 7 % 360},65%,55%), hsl(${(dream.walletAddress?.charCodeAt(2) || 0) * 11 % 360},65%,45%))`,
           }} />
           @{dream.username}
         </Link>
 
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: believed ? 'var(--gold)' : 'var(--text-2)' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <span style={{
+            fontFamily: 'var(--font-mono)', fontSize: '0.78rem',
+            color: believed ? 'var(--gold)' : 'var(--text-3)',
+            display: 'flex', alignItems: 'center', gap: 4,
+          }}>
             {believed ? '★' : '☆'} {localCount}
           </span>
+
           {canBelieve && (
             <button
               onClick={handleBelieve}
               disabled={loading}
-              className="btn btn-sm"
-              style={{
-                background: 'var(--gold-glow)', color: 'var(--gold)',
-                border: '1px solid rgba(255,209,102,0.3)', fontWeight: 600,
-              }}
+              className="btn btn-gold btn-sm"
             >
-              {loading ? '...' : 'Believe'}
+              {loading ? '···' : 'Believe'}
             </button>
           )}
           {believed && (
-            <span style={{ fontSize: '0.75rem', color: 'var(--gold)', fontWeight: 600 }}>Believed ✓</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--gold)', fontWeight: 700 }}>Believed ✓</span>
           )}
         </div>
       </div>

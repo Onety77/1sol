@@ -7,10 +7,10 @@ import PostDreamModal from '../components/dreams/PostDreamModal';
 import CountdownTimer from '../components/ui/CountdownTimer';
 
 const FILTERS = [
-  { key: 'top', label: '🔥 Top' },
-  { key: 'rising', label: '📈 Rising' },
-  { key: 'new', label: '🆕 New' },
-  { key: 'fading', label: '⚠️ Fading' },
+  { key: 'top',    label: 'Top',    icon: '🔥' },
+  { key: 'rising', label: 'Rising', icon: '📈' },
+  { key: 'new',    label: 'New',    icon: '✦' },
+  { key: 'fading', label: 'Fading', icon: '⚠' },
 ];
 
 export default function Dreamboard() {
@@ -41,60 +41,78 @@ export default function Dreamboard() {
   useEffect(() => { fetchDreams(); }, [fetchDreams]);
   useEffect(() => { fetchBeliefs(); }, [fetchBeliefs]);
 
+  const beliefsUsed = myBeliefs.length;
+
   return (
-    <div className="page" style={{ background: 'var(--void)' }}>
+    <div style={{ minHeight: '100vh', paddingTop: 72, paddingBottom: 100 }}>
+
       {/* Header */}
       <div style={{
-        borderBottom: '1px solid var(--border)',
-        background: 'linear-gradient(180deg, var(--deep) 0%, var(--void) 100%)',
-        padding: '40px 0 0',
+        background: 'linear-gradient(180deg, rgba(13,13,40,0.6) 0%, transparent 100%)',
+        borderBottom: '1px solid rgba(255,255,255,0.05)',
+        padding: '36px 0 0',
+        backdropFilter: 'blur(20px)',
+        position: 'sticky', top: 64, zIndex: 50,
       }}>
         <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between',
+            alignItems: 'flex-end', marginBottom: 20,
+            flexWrap: 'wrap', gap: 14,
+          }}>
             <div>
-              <p className="section-label">Live</p>
-              <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', fontWeight: 800 }}>
-                The Dreamboard
-              </h1>
-              <p style={{ color: 'var(--text-2)', marginTop: 6, fontSize: '0.9rem' }}>
-                All active dreams competing in Round #{currentRound?.roundNumber || '—'}.
-                {currentRound && <> Ends in <CountdownTimer endsAt={currentRound.endsAt} compact /></>}
+              <p className="section-label" style={{ marginBottom: 6 }}>Live</p>
+              <h1 style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800,
+                letterSpacing: '-0.03em',
+              }}>The Dreamboard</h1>
+              <p style={{ color: 'var(--text-2)', marginTop: 4, fontSize: '0.85rem' }}>
+                Round #{currentRound?.roundNumber || '—'}
+                {currentRound && (
+                  <> · Ends <CountdownTimer endsAt={currentRound.endsAt} compact /></>
+                )}
               </p>
             </div>
-            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
               {currentRound && (
                 <div style={{
-                  background: 'var(--gold-glow)', border: '1px solid rgba(255,209,102,0.3)',
-                  borderRadius: 'var(--r-md)', padding: '8px 16px',
-                  fontFamily: 'var(--font-display)', fontSize: '0.9rem', color: 'var(--gold)',
+                  background: 'rgba(251,191,36,0.08)',
+                  border: '1px solid rgba(251,191,36,0.2)',
+                  borderRadius: 'var(--r-full)',
+                  padding: '7px 16px',
+                  fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: 'var(--gold)',
+                  fontWeight: 700,
                 }}>
                   ◎ {potSOL.toFixed(2)} pot
                 </div>
               )}
               {user && (
-                <button onClick={() => setModalOpen(true)} className="btn btn-primary">
+                <button onClick={() => setModalOpen(true)} className="btn btn-primary btn-sm">
                   + Post Dream
                 </button>
               )}
             </div>
           </div>
 
-          {/* Filter tabs */}
-          <div style={{ display: 'flex', gap: 4 }}>
+          {/* Filter pills */}
+          <div style={{ display: 'flex', gap: 6, paddingBottom: 0 }}>
             {FILTERS.map(f => (
               <button
                 key={f.key}
                 onClick={() => setFilter(f.key)}
                 style={{
-                  padding: '9px 18px', borderRadius: 'var(--r-md) var(--r-md) 0 0',
-                  background: filter === f.key ? 'var(--surface)' : 'transparent',
+                  padding: '8px 18px', borderRadius: 'var(--r-full) var(--r-full) 0 0',
+                  background: filter === f.key ? 'rgba(255,255,255,0.07)' : 'transparent',
                   color: filter === f.key ? 'var(--text)' : 'var(--text-3)',
-                  border: `1px solid ${filter === f.key ? 'var(--border)' : 'transparent'}`,
-                  borderBottom: filter === f.key ? '1px solid var(--surface)' : '1px solid transparent',
-                  fontSize: '0.85rem', fontWeight: 600, transition: 'all 0.2s',
-                  cursor: 'pointer', marginBottom: -1,
+                  border: `1px solid ${filter === f.key ? 'rgba(255,255,255,0.1)' : 'transparent'}`,
+                  borderBottom: filter === f.key ? '1px solid rgba(13,13,40,0.6)' : '1px solid transparent',
+                  fontSize: '0.82rem', fontWeight: 600,
+                  transition: 'all 0.2s', cursor: 'pointer', marginBottom: -1,
+                  backdropFilter: filter === f.key ? 'blur(12px)' : 'none',
                 }}
-              >{f.label}</button>
+              >{f.icon} {f.label}</button>
             ))}
           </div>
         </div>
@@ -102,60 +120,73 @@ export default function Dreamboard() {
 
       {/* Beliefs bar */}
       {user && (
-        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)', padding: '10px 0' }}>
+        <div style={{
+          background: 'rgba(255,255,255,0.02)',
+          borderBottom: '1px solid rgba(255,255,255,0.05)',
+          padding: '10px 0',
+        }}>
           <div className="container">
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: '0.82rem' }}>
-              <span style={{ color: 'var(--text-3)' }}>Your beliefs this round:</span>
-              {[...Array(6)].map((_, i) => (
-                <div key={i} style={{
-                  width: 10, height: 10, borderRadius: '50%',
-                  background: i < myBeliefs.length ? 'var(--gold)' : 'var(--border)',
-                  boxShadow: i < myBeliefs.length ? '0 0 6px var(--gold)' : 'none',
-                }} />
-              ))}
-              <span style={{ color: 'var(--text-2)' }}>{myBeliefs.length}/6 used</span>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: '0.8rem' }}>
+              <span style={{ color: 'var(--text-3)', fontFamily: 'var(--font-mono)' }}>Beliefs this round:</span>
+              <div style={{ display: 'flex', gap: 5 }}>
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} style={{
+                    width: 9, height: 9, borderRadius: '50%',
+                    background: i < beliefsUsed ? 'var(--gold)' : 'rgba(255,255,255,0.08)',
+                    boxShadow: i < beliefsUsed ? '0 0 6px rgba(251,191,36,0.5)' : 'none',
+                    transition: 'all 0.3s',
+                  }} />
+                ))}
+              </div>
+              <span style={{ color: 'var(--text-2)' }}>{beliefsUsed}/6</span>
             </div>
           </div>
         </div>
       )}
 
-      {/* Grid */}
-      <div className="container" style={{ padding: '32px 24px' }}>
+      {/* Dream grid */}
+      <div className="container" style={{ paddingTop: 28, paddingBottom: 32 }}>
         {loading ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: 20 }}>
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="skeleton" style={{ height: 220, borderRadius: 'var(--r-lg)' }} />
+              <div key={i} className="skeleton" style={{ height: 240, borderRadius: 'var(--r-lg)' }} />
             ))}
           </div>
         ) : dreamsList.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '80px 0' }}>
-            <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', color: 'var(--text-3)', marginBottom: 20 }}>
-              No dreams here yet.
-            </p>
+          <div style={{
+            textAlign: 'center', padding: 'clamp(60px, 10vw, 100px) 0',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16,
+          }}>
+            <div style={{ fontSize: '3rem', opacity: 0.4 }}>✦</div>
+            <p style={{
+              fontFamily: 'var(--font-display)', fontSize: '1.2rem',
+              color: 'var(--text-3)', letterSpacing: '-0.02em',
+            }}>No dreams here yet.</p>
             {user ? (
               <button onClick={() => setModalOpen(true)} className="btn btn-primary">
                 Be the first to dream
               </button>
             ) : (
-              <p style={{ color: 'var(--text-3)' }}>
-                <a href="/signup" style={{ color: 'var(--gold)' }}>Join</a> to post your dream.
+              <p style={{ color: 'var(--text-3)', fontSize: '0.88rem' }}>
+                <a href="/signup" style={{ color: 'var(--gold)', fontWeight: 600 }}>Join</a> to post your dream.
               </p>
             )}
           </div>
         ) : (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))',
-            gap: 20, alignItems: 'start',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: 18, alignItems: 'start',
           }}>
             {dreamsList.map((dream, i) => (
-              <DreamCard
-                key={dream.id}
-                dream={dream}
-                myBeliefs={myBeliefs}
-                onBelief={fetchBeliefs}
-                rank={filter === 'top' || filter === 'rising' ? i + 1 : undefined}
-              />
+              <div key={dream.id} style={{ animation: `fade-in 0.4s ease-out ${i * 0.04}s both` }}>
+                <DreamCard
+                  dream={dream}
+                  myBeliefs={myBeliefs}
+                  onBelief={fetchBeliefs}
+                  rank={filter === 'top' || filter === 'rising' ? i + 1 : undefined}
+                />
+              </div>
             ))}
           </div>
         )}
