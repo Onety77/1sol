@@ -11,110 +11,106 @@ function GraveCard({ dream, i }) {
     ? new Date(dream.updatedAt.seconds * 1000)
     : dream.updatedAt?.toDate ? dream.updatedAt.toDate() : new Date();
 
+  const stripeRgb   = isResurrected ? '191,95,255' : '58,58,90';
+  const stripeAlpha = isResurrected ? 0.65 : 0.12;
+
   return (
     <div
-      className={isResurrected ? 'dc-resurrected glass' : ''}
       style={{
-        borderRadius: 'var(--r-lg)', padding: 20,
-        background: isResurrected
-          ? undefined
-          : 'rgba(8,8,22,0.7)',
-        border: isResurrected
-          ? undefined
-          : '1px solid rgba(255,255,255,0.035)',
+        position: 'relative', overflow: 'hidden',
         display: 'flex', flexDirection: 'column', gap: 10,
+        padding: '16px 18px 14px 16px',
+        borderRadius: 0,
+        background: isResurrected ? 'rgba(191,95,255,0.04)' : 'rgba(4,4,10,0.75)',
+        borderLeft: `3px solid rgba(${stripeRgb},${stripeAlpha})`,
+        borderTop: '1px solid rgba(255,255,255,0.04)',
+        borderRight: '1px solid rgba(255,255,255,0.04)',
+        borderBottom: '1px solid rgba(255,255,255,0.04)',
+        boxShadow: isResurrected
+          ? '-5px 0 22px rgba(191,95,255,0.1), 0 5px 20px rgba(0,0,0,0.45)'
+          : '0 4px 16px rgba(0,0,0,0.5)',
         animation: `fade-up 0.45s ease-out ${i * 0.04}s both`,
-        filter: isResurrected ? 'none' : 'grayscale(60%) brightness(0.7)',
-        transition: 'filter 0.3s, transform 0.25s',
+        filter: isResurrected ? 'none' : 'grayscale(65%) brightness(0.62)',
+        transition: 'filter 0.3s, transform 0.22s, box-shadow 0.22s',
       }}
       onMouseEnter={e => {
-        if (isResurrected) {
-          e.currentTarget.style.transform = 'translateY(-3px)';
-        } else {
-          e.currentTarget.style.filter = 'grayscale(40%) brightness(0.85)';
-        }
+        e.currentTarget.style.transform = 'translateY(-3px)';
+        if (!isResurrected) e.currentTarget.style.filter = 'grayscale(35%) brightness(0.82)';
+        if (isResurrected) e.currentTarget.style.boxShadow = '-7px 0 32px rgba(191,95,255,0.18), 0 8px 28px rgba(0,0,0,0.5)';
       }}
       onMouseLeave={e => {
         e.currentTarget.style.transform = '';
-        e.currentTarget.style.filter = isResurrected ? 'none' : 'grayscale(60%) brightness(0.7)';
+        e.currentTarget.style.filter = isResurrected ? 'none' : 'grayscale(65%) brightness(0.62)';
+        e.currentTarget.style.boxShadow = '';
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      {/* Corner cut */}
+      <div style={{
+        position: 'absolute', bottom: -1, right: -1, width: 16, height: 16,
+        background: 'var(--void)',
+        clipPath: 'polygon(0 100%, 100% 0, 100% 100%)',
+        zIndex: 10, pointerEvents: 'none',
+      }} />
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', zIndex: 1 }}>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
-          {isResurrected ? (
-            <span style={{
-              background: 'rgba(191,95,255,0.1)', color: 'var(--resurrected)',
-              border: '1px solid rgba(191,95,255,0.25)',
-              borderRadius: 'var(--r-full)', padding: '2px 10px',
-              fontSize: '0.68rem', fontWeight: 700,
-            }}>⚡ Resurrected</span>
-          ) : (
-            <span style={{
-              background: 'rgba(20,20,40,0.8)', color: '#3A3A5A',
-              border: '1px solid rgba(255,255,255,0.04)',
-              borderRadius: 'var(--r-full)', padding: '2px 10px',
-              fontSize: '0.68rem', fontWeight: 700,
-            }}>✕ Faded</span>
-          )}
+          <span style={{
+            fontFamily: 'var(--font-mono)', fontSize: '0.6rem', fontWeight: 700,
+            letterSpacing: '0.12em', textTransform: 'uppercase',
+            color: isResurrected ? 'var(--resurrected)' : 'var(--text-3)',
+            textShadow: isResurrected ? '0 0 10px rgba(191,95,255,0.6)' : 'none',
+          }}>
+            {isResurrected ? '⚡ Resurrected' : '✕ Faded'}
+          </span>
           {dream.mood && (
-            <span className={`tag mood-${dream.mood}`} style={{
-              fontSize: '0.64rem',
-              opacity: isResurrected ? 1 : 0.4,
-            }}>
+            <span className={`tag mood-${dream.mood}`} style={{ fontSize: '0.6rem', opacity: isResurrected ? 1 : 0.35 }}>
               {MOOD_EMOJI[dream.mood]} {dream.mood}
             </span>
           )}
         </div>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: isResurrected ? 'var(--text-3)' : '#1E1E3A' }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--text-3)', flexShrink: 0 }}>
           {formatDistanceToNow(updatedAt, { addSuffix: true })}
         </span>
       </div>
 
       <h3 style={{
-        fontFamily: 'var(--font-display)', fontSize: '0.85rem', fontWeight: 700, lineHeight: 1.3,
-        color: isResurrected ? 'var(--resurrected)' : '#2A2A4A',
+        fontFamily: 'var(--font-display)', fontSize: '0.84rem', fontWeight: 700, lineHeight: 1.28,
+        color: isResurrected ? 'var(--resurrected)' : 'var(--text-3)',
+        zIndex: 1,
       }}>{dream.title}</h3>
 
       <p style={{
-        fontSize: '0.78rem', lineHeight: 1.55,
-        color: isResurrected ? 'var(--text-2)' : '#1E1E3A',
+        fontSize: '0.76rem', lineHeight: 1.55, zIndex: 1,
+        color: isResurrected ? 'var(--text-2)' : 'var(--text-3)',
         display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+        opacity: isResurrected ? 1 : 0.6,
       }}>{dream.story}</p>
 
-      {!isResurrected && (
-        <p style={{
-          fontSize: '0.7rem', color: '#161630', fontStyle: 'italic',
-          borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 8,
-        }}>
-          This dream lost color. The dreamer sold.
-        </p>
-      )}
-      {isResurrected && (
-        <p style={{
-          fontSize: '0.7rem', color: 'var(--resurrected)',
-          borderTop: '1px solid rgba(191,95,255,0.15)', paddingTop: 8,
-        }}>
-          The dreamer returned. Competing again next round.
-        </p>
-      )}
+      {/* Perforated divider */}
+      <div style={{
+        borderTop: `1px dashed rgba(${stripeRgb},${isResurrected ? 0.2 : 0.06})`,
+        margin: '0 -2px', zIndex: 1,
+      }} />
 
-      <Link to={`/profile/${dream.walletAddress}`} style={{
-        display: 'flex', alignItems: 'center', gap: 6,
-        color: isResurrected ? 'var(--text-3)' : '#1A1A38',
-        fontSize: '0.72rem', marginTop: 'auto',
-        textDecoration: 'none',
-      }}>
-        <div style={{
-          width: 14, height: 14, borderRadius: '50%',
-          background: isResurrected ? 'var(--resurrected)' : '#1A1A38',
-        }} />
-        @{dream.username}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 1 }}>
+        <Link to={`/profile/${dream.walletAddress}`} style={{
+          display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.7rem',
+          color: isResurrected ? 'var(--text-3)' : 'rgba(100,100,140,0.5)',
+          textDecoration: 'none',
+        }}>
+          <div style={{
+            width: 13, height: 13, borderRadius: '50%',
+            background: isResurrected
+              ? `linear-gradient(135deg, hsl(${(dream.walletAddress?.charCodeAt(0)||0)*7%360},65%,55%), hsl(${(dream.walletAddress?.charCodeAt(2)||0)*11%360},65%,45%))`
+              : 'rgba(58,58,90,0.4)',
+          }} />
+          @{dream.username}
+        </Link>
         <span style={{
-          marginLeft: 'auto',
-          fontFamily: 'var(--font-mono)',
-          color: isResurrected ? 'var(--resurrected)' : '#1A1A38',
+          fontFamily: 'var(--font-mono)', fontSize: '0.72rem',
+          color: isResurrected ? 'var(--resurrected)' : 'rgba(58,58,90,0.5)',
         }}>★ {dream.beliefCount || 0}</span>
-      </Link>
+      </div>
     </div>
   );
 }

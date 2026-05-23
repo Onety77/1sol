@@ -16,17 +16,10 @@ const MOOD_EMOJI = {
   Degenerate: '🔥', Impossible: '🚀', Unfinished: '⏳',
 };
 
-const RANK_META = {
-  1: { bg: 'linear-gradient(135deg,#FFD700,#FF9900)', color: '#000',    glow: 'rgba(255,215,0,0.6)' },
-  2: { bg: 'linear-gradient(135deg,#C8C8E0,#A0A0B8)', color: '#050010', glow: 'rgba(200,200,224,0.4)' },
-  3: { bg: 'linear-gradient(135deg,#CD7F32,#A05020)', color: '#fff',    glow: 'rgba(205,127,50,0.4)' },
-};
-
-/* Deterministic tilt — same tilt every render for the same dream */
 function hashTilt(str) {
   let h = 0;
   for (let i = 0; i < (str?.length || 0); i++) h = Math.imul(31, h) + str.charCodeAt(i) | 0;
-  return ((h & 0xFF) / 255) * 3 - 1.5; // -1.5° to +1.5°
+  return ((h & 0xFF) / 255) * 2.6 - 1.3;
 }
 
 export default function DreamCard({ dream, myBeliefs = [], onBelief, rank, compact = false }) {
@@ -35,18 +28,18 @@ export default function DreamCard({ dream, myBeliefs = [], onBelief, rank, compa
   const [localCount, setLocalCount] = useState(dream.beliefCount || 0);
   const [believed, setBelieved] = useState(myBeliefs.includes(dream.id));
   const cardRef = useRef(null);
-  const [hovered, setHovered] = useState(false);
 
-  const state   = dream.state || 'alive';
-  const meta    = STATE_META[state] || STATE_META.alive;
-  const isOwn   = user?.userId === dream.userId;
+  const state      = dream.state || 'alive';
+  const meta       = STATE_META[state] || STATE_META.alive;
+  const isOwn      = user?.userId === dream.userId;
   const canBelieve = user && !isOwn && !believed && state !== 'grey';
+  const isGrey     = state === 'grey';
 
-  /* Belief-level glow — 0 to 1 based on beliefCount capped at 40 */
   const glowLevel  = Math.min(localCount, 40) / 40;
-  const glowRadius = compact ? 0 : 20 + glowLevel * 50;
-  const glowAlpha  = 0.04 + glowLevel * 0.2;
   const tilt       = hashTilt(dream.id);
+  const stripeAlpha = isGrey ? 0.08 : 0.6 + glowLevel * 0.3;
+  const glowSpread  = 22 + glowLevel * 46;
+  const glowAlpha   = 0.1 + glowLevel * 0.22;
 
   const handleBelieve = async e => {
     e.preventDefault();
@@ -62,176 +55,220 @@ export default function DreamCard({ dream, myBeliefs = [], onBelief, rank, compa
     } finally { setLoading(false); }
   };
 
-  /* 3D tilt on mousemove */
   const handleMouseMove = e => {
     if (!cardRef.current || compact) return;
     const r = cardRef.current.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width  - 0.5;
     const y = (e.clientY - r.top)  / r.height - 0.5;
     cardRef.current.style.transform =
-      `rotate(${tilt}deg) perspective(900px) rotateX(${(-y * 8).toFixed(2)}deg) rotateY(${(x * 8).toFixed(2)}deg) translateY(-6px) scale(1.02)`;
+      `rotate(${tilt}deg) perspective(800px) rotateX(${(-y * 6).toFixed(2)}deg) rotateY(${(x * 6).toFixed(2)}deg) translateY(-8px)`;
   };
   const handleMouseLeave = () => {
     if (!cardRef.current) return;
     cardRef.current.style.transform = `rotate(${tilt}deg)`;
-    setHovered(false);
   };
-  const handleMouseEnter = () => setHovered(true);
 
-  const rankInfo = rank !== undefined && rank <= 3 ? RANK_META[rank] : null;
+  /* ── COMPACT: horizontal strip ────────────────────────────────────── */
+  if (compact) {
+    return (
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          position: 'relative',
+          display: 'flex', alignItems: 'center', gap: 12,
+          padding: '11px 14px',
+          borderLeft: `3px solid rgba(${meta.rgb},${stripeAlpha})`,
+          borderTop: '1px solid rgba(255,255,255,0.05)',
+          borderRight: '1px solid rgba(255,255,255,0.05)',
+          borderBottom: '1px solid rgba(255,255,255,0.05)',
+          borderRadius: 0,
+          background: isGrey ? 'rgba(5,5,12,0.6)' : 'rgba(255,255,255,0.025)',
+          boxShadow: isGrey ? 'none' : `-4px 0 ${glowSpread * 0.5}px rgba(${meta.rgb},${glowAlpha * 0.7})`,
+          transform: `rotate(${tilt * 0.4}deg)`,
+          transition: 'transform 0.15s ease-out',
+          filter: isGrey ? 'grayscale(80%) brightness(0.48)' : 'none',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Corner cut */}
+        <div style={{
+          position: 'absolute', bottom: -1, right: -1, width: 14, height: 14,
+          background: 'var(--void)',
+          clipPath: 'polygon(0 100%, 100% 0, 100% 100%)',
+          zIndex: 10, pointerEvents: 'none',
+        }} />
 
+        {rank !== undefined && (
+          <span style={{
+            fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--text-3)',
+            flexShrink: 0, minWidth: 22, letterSpacing: '0.06em',
+          }}>#{rank}</span>
+        )}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{
+            fontFamily: 'var(--font-display)', fontSize: '0.78rem', fontWeight: 700,
+            color: state === 'crowned' ? 'var(--gold)' : isGrey ? 'var(--text-3)' : 'var(--text)',
+            lineHeight: 1.2,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>{dream.title}</p>
+          <p style={{ fontSize: '0.62rem', color: 'var(--text-3)', marginTop: 2 }}>
+            @{dream.username}
+          </p>
+        </div>
+        <span style={{
+          fontFamily: 'var(--font-display)', fontWeight: 900, flexShrink: 0,
+          fontSize: '1rem', lineHeight: 1,
+          color: localCount > 0 ? 'var(--gold)' : 'var(--text-3)',
+          textShadow: localCount > 5 ? '0 0 16px rgba(255,215,0,0.5)' : 'none',
+        }}>{believed ? '★' : '☆'} {localCount}</span>
+        {canBelieve && (
+          <button onClick={handleBelieve} disabled={loading} className="btn btn-gold btn-sm"
+            style={{ flexShrink: 0, padding: '4px 10px', fontSize: '0.7rem' }}>
+            {loading ? '···' : '+'}
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  /* ── FULL card ─────────────────────────────────────────────────────── */
   return (
     <div
       ref={cardRef}
-      className={`dc-${state} fade-up`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      onMouseEnter={handleMouseEnter}
       style={{
-        padding: compact ? '14px' : '22px',
         position: 'relative',
-        display: 'flex', flexDirection: 'column', gap: compact ? 8 : 14,
-        borderRadius: 'var(--r-lg)',
+        display: 'flex', flexDirection: 'column', gap: 14,
+        padding: '20px 22px 18px 20px',
+        borderRadius: 0,
         cursor: 'default',
         overflow: 'hidden',
-        /* Base: glass */
-        background: 'rgba(255,255,255,0.04)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        border: `1px solid rgba(${meta.rgb},${0.15 + glowLevel * 0.2})`,
-        /* Permanent slight tilt */
+        background: isGrey
+          ? 'rgba(5,5,12,0.8)'
+          : 'rgba(255,255,255,0.033)',
+        borderLeft: `3px solid rgba(${meta.rgb},${stripeAlpha})`,
+        borderTop: '1px solid rgba(255,255,255,0.07)',
+        borderRight: '1px solid rgba(255,255,255,0.07)',
+        borderBottom: '1px solid rgba(255,255,255,0.07)',
+        boxShadow: isGrey
+          ? '0 6px 28px rgba(0,0,0,0.55)'
+          : `-8px 0 ${glowSpread}px rgba(${meta.rgb},${glowAlpha}), 0 8px 28px rgba(0,0,0,0.45)`,
         transform: `rotate(${tilt}deg)`,
-        /* Outer glow based on beliefs */
-        boxShadow: state !== 'grey'
-          ? `0 0 ${glowRadius}px rgba(${meta.rgb},${glowAlpha}), 0 4px 20px rgba(0,0,0,0.4)`
-          : '0 4px 20px rgba(0,0,0,0.4)',
         transition: 'transform 0.15s ease-out, box-shadow 0.3s ease-out',
         willChange: 'transform',
+        filter: isGrey ? 'grayscale(85%) brightness(0.48)' : 'none',
       }}
     >
-      {/* Top accent line — color matches state */}
+      {/* Bottom-right corner cut — illusion via page-bg overlay */}
       <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: 2,
-        background: `linear-gradient(90deg, transparent, rgba(${meta.rgb},${0.4 + glowLevel * 0.5}), transparent)`,
-        pointerEvents: 'none',
+        position: 'absolute', bottom: -1, right: -1, width: 22, height: 22,
+        background: 'var(--void)',
+        clipPath: 'polygon(0 100%, 100% 0, 100% 100%)',
+        zIndex: 10, pointerEvents: 'none',
       }} />
 
-      {/* Inner glow on hover */}
-      {hovered && state !== 'grey' && (
+      {/* Rank watermark */}
+      {rank !== undefined && (
         <div style={{
-          position: 'absolute', inset: 0,
-          background: `radial-gradient(ellipse at 50% 0%, rgba(${meta.rgb},0.06) 0%, transparent 70%)`,
-          pointerEvents: 'none',
-        }} />
+          position: 'absolute', right: 28, bottom: 14,
+          fontFamily: 'var(--font-display)', fontWeight: 900, lineHeight: 1,
+          fontSize: rank <= 3 ? '4.5rem' : '2.8rem',
+          color: rank <= 3 ? `rgba(${meta.rgb},0.07)` : 'rgba(255,255,255,0.03)',
+          pointerEvents: 'none', userSelect: 'none', zIndex: 0,
+        }}>
+          {rank <= 3 ? rank : `#${rank}`}
+        </div>
       )}
 
-      {/* Rank badge */}
-      {rankInfo && (
-        <div style={{
-          position: 'absolute', top: -10, left: -10, zIndex: 3,
-          width: 32, height: 32, borderRadius: '50%',
-          background: rankInfo.bg, color: rankInfo.color,
-          fontFamily: 'var(--font-display)', fontSize: '0.72rem', fontWeight: 900,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: `0 0 16px ${rankInfo.glow}`,
-        }}>{rank}</div>
-      )}
-      {rank !== undefined && rank > 3 && (
-        <div style={{
-          position: 'absolute', top: -10, left: -10, zIndex: 3,
-          width: 28, height: 28, borderRadius: '50%',
-          background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-          color: 'var(--text-3)', fontFamily: 'var(--font-mono)', fontSize: '0.64rem', fontWeight: 700,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>#{rank}</div>
-      )}
-
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
-          <span className={`tag mood-${dream.mood}`} style={{ fontSize: '0.62rem' }}>
+      {/* ── Header ── */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, zIndex: 1 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
+          <span style={{
+            fontFamily: 'var(--font-mono)', fontSize: '0.58rem', fontWeight: 700,
+            color: meta.color, letterSpacing: '0.14em', textTransform: 'uppercase',
+            textShadow: isGrey ? 'none' : `0 0 10px rgba(${meta.rgb},0.65)`,
+          }}>{meta.icon} {meta.label}</span>
+          <span className={`tag mood-${dream.mood}`} style={{ fontSize: '0.58rem' }}>
             {MOOD_EMOJI[dream.mood]} {dream.mood}
           </span>
-          <span style={{
-            fontSize: '0.62rem', color: meta.color, fontWeight: 700,
-            fontFamily: 'var(--font-mono)',
-            textShadow: `0 0 8px rgba(${meta.rgb},0.5)`,
-          }}>
-            {meta.icon} {meta.label}
-          </span>
         </div>
-        <div style={{ display: 'flex', gap: 6, flexShrink: 0, opacity: 0.6 }}>
-          {dream.proofImageUrl && <span style={{ fontSize: '0.75rem' }}>📸</span>}
-          {dream.proofLink    && <span style={{ fontSize: '0.75rem' }}>🔗</span>}
+
+        {/* Belief count — prominent */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0 }}>
+          <span style={{
+            fontFamily: 'var(--font-display)', fontWeight: 900, lineHeight: 1,
+            fontSize: localCount >= 10 ? '1.7rem' : '1.4rem',
+            color: localCount > 0 ? 'var(--gold)' : 'var(--text-3)',
+            textShadow: localCount > 5 ? '0 0 28px rgba(255,215,0,0.55)' : 'none',
+          }}>{believed ? '★' : '☆'} {localCount}</span>
+          <span style={{
+            fontSize: '0.5rem', color: 'var(--text-3)',
+            fontFamily: 'var(--font-mono)', letterSpacing: '0.14em', marginTop: 1,
+          }}>BELIEFS</span>
         </div>
       </div>
 
-      {/* Title */}
+      {/* ── Title ── */}
       <h3 style={{
         fontFamily: 'var(--font-display)', fontWeight: 700,
-        fontSize: compact ? '0.8rem' : '0.93rem',
-        lineHeight: 1.3,
-        color: state === 'grey' ? 'var(--text-3)' : state === 'crowned' ? 'var(--gold)' : 'var(--text)',
-        textShadow: state === 'crowned' ? '0 0 20px rgba(255,215,0,0.2)' : 'none',
+        fontSize: '0.92rem', lineHeight: 1.28,
+        color: isGrey ? 'var(--text-3)' : state === 'crowned' ? 'var(--gold)' : 'var(--text)',
+        textShadow: state === 'crowned' ? '0 0 20px rgba(255,215,0,0.22)' : 'none',
+        zIndex: 1,
       }}>{dream.title}</h3>
 
-      {!compact && (
-        <p style={{
-          fontSize: '0.82rem', lineHeight: 1.65,
-          color: state === 'grey' ? 'var(--text-3)' : 'var(--text-2)',
-          display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-        }}>{dream.story}</p>
-      )}
+      {/* ── Story ── */}
+      <p style={{
+        fontSize: '0.8rem', lineHeight: 1.65, zIndex: 1,
+        color: isGrey ? 'var(--text-3)' : 'var(--text-2)',
+        display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+      }}>{dream.story}</p>
 
-      {state === 'grey' && (
-        <p style={{ fontSize: '0.7rem', color: 'var(--text-3)', fontStyle: 'italic', borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 8 }}>
-          This dream lost color. The dreamer sold.
-        </p>
-      )}
-
-      {/* Footer */}
+      {/* ── Perforated divider ── */}
       <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        marginTop: 'auto', paddingTop: 10,
-        borderTop: '1px solid rgba(255,255,255,0.05)',
-      }}>
+        borderTop: `1px dashed rgba(${meta.rgb}, ${isGrey ? 0.04 : 0.18})`,
+        margin: '0 -2px',
+      }} />
+
+      {/* ── Footer ── */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 1 }}>
         <Link
           to={`/profile/${dream.walletAddress}`}
           onClick={e => e.stopPropagation()}
-          style={{ display: 'flex', alignItems: 'center', gap: 7, color: 'var(--text-3)', fontSize: '0.74rem' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-3)', fontSize: '0.72rem' }}
           onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-2)'; }}
           onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-3)'; }}
         >
           <div style={{
-            width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
+            width: 16, height: 16, borderRadius: '50%', flexShrink: 0,
             background: `linear-gradient(135deg,
               hsl(${((dream.walletAddress?.charCodeAt(0) || 0) * 7) % 360},65%,55%),
               hsl(${((dream.walletAddress?.charCodeAt(2) || 0) * 11) % 360},65%,45%))`,
           }} />
           @{dream.username}
+          {(dream.proofImageUrl || dream.proofLink) && (
+            <span style={{ opacity: 0.45, marginLeft: 2, fontSize: '0.7rem' }}>
+              {dream.proofImageUrl ? '📸' : '🔗'}
+            </span>
+          )}
         </Link>
 
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          {/* Belief count with glow */}
-          <span style={{
-            fontFamily: 'var(--font-mono)', fontSize: '0.78rem',
-            color: localCount > 0 ? 'var(--gold)' : 'var(--text-3)',
-            textShadow: localCount > 5 ? '0 0 10px rgba(255,215,0,0.5)' : 'none',
-            display: 'flex', alignItems: 'center', gap: 4,
-          }}>
-            {believed ? '★' : '☆'} {localCount}
-          </span>
-
           {canBelieve && (
             <button onClick={handleBelieve} disabled={loading} className="btn btn-gold btn-sm">
               {loading ? '···' : 'Believe'}
             </button>
           )}
           {believed && (
-            <span style={{
-              fontSize: '0.7rem', color: 'var(--gold)', fontWeight: 700,
-              textShadow: '0 0 8px rgba(255,215,0,0.5)',
-            }}>✓ Believed</span>
+            <span style={{ fontSize: '0.68rem', color: 'var(--gold)', fontWeight: 700, textShadow: '0 0 8px rgba(255,215,0,0.45)' }}>
+              ✓ Believed
+            </span>
+          )}
+          {!canBelieve && !believed && !isOwn && !user && (
+            <Link to="/signup" style={{ fontSize: '0.68rem', color: 'var(--text-3)' }}>Join →</Link>
           )}
         </div>
       </div>

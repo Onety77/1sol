@@ -97,20 +97,23 @@ export default function Dreamboard() {
           </div>
 
           {/* Filter pills */}
-          <div style={{ display: 'flex', gap: 6, paddingBottom: 0 }}>
+          <div style={{ display: 'flex', gap: 4, paddingBottom: 0 }}>
             {FILTERS.map(f => (
               <button
                 key={f.key}
                 onClick={() => setFilter(f.key)}
                 style={{
-                  padding: '8px 18px', borderRadius: 'var(--r-full) var(--r-full) 0 0',
-                  background: filter === f.key ? 'rgba(255,255,255,0.07)' : 'transparent',
-                  color: filter === f.key ? 'var(--text)' : 'var(--text-3)',
-                  border: `1px solid ${filter === f.key ? 'rgba(255,255,255,0.1)' : 'transparent'}`,
-                  borderBottom: filter === f.key ? '1px solid rgba(13,13,40,0.6)' : '1px solid transparent',
-                  fontSize: '0.82rem', fontWeight: 600,
-                  transition: 'all 0.2s', cursor: 'pointer', marginBottom: -1,
-                  backdropFilter: filter === f.key ? 'blur(12px)' : 'none',
+                  padding: '7px 16px',
+                  borderRadius: 0,
+                  background: filter === f.key ? 'rgba(255,215,0,0.08)' : 'transparent',
+                  color: filter === f.key ? 'var(--gold)' : 'var(--text-3)',
+                  borderLeft: filter === f.key ? '2px solid rgba(255,215,0,0.6)' : '2px solid transparent',
+                  borderTop: '1px solid transparent',
+                  borderRight: '1px solid transparent',
+                  borderBottom: '1px solid transparent',
+                  fontSize: '0.78rem', fontWeight: 600, letterSpacing: '0.04em',
+                  transition: 'all 0.18s', cursor: 'pointer',
+                  fontFamily: 'var(--font-mono)',
                 }}
               >{f.icon} {f.label}</button>
             ))}
@@ -144,12 +147,12 @@ export default function Dreamboard() {
         </div>
       )}
 
-      {/* Dream grid */}
+      {/* Dream masonry */}
       <div className="container" style={{ paddingTop: 28, paddingBottom: 32 }}>
         {loading ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: 20 }}>
+          <div style={{ columns: '2 280px', columnGap: 18 }}>
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="skeleton" style={{ height: 240, borderRadius: 'var(--r-lg)' }} />
+              <div key={i} className="skeleton" style={{ height: 220, marginBottom: 18, breakInside: 'avoid' }} />
             ))}
           </div>
         ) : dreamsList.length === 0 ? (
@@ -173,13 +176,9 @@ export default function Dreamboard() {
             )}
           </div>
         ) : (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: 18, alignItems: 'start',
-          }}>
+          <div style={{ columns: '2 280px', columnGap: 20 }}>
             {dreamsList.map((dream, i) => (
-              <div key={dream.id} style={{ animation: `fade-up 0.4s ease-out ${i * 0.04}s both` }}>
+              <div key={dream.id} style={{ breakInside: 'avoid', marginBottom: 20, animation: `fade-up 0.4s ease-out ${i * 0.04}s both` }}>
                 <DreamCard
                   dream={dream}
                   myBeliefs={myBeliefs}

@@ -7,114 +7,142 @@ const MOOD_EMOJI = { Serious: '🎯', Funny: '😂', Delusional: '🌀', Beautif
 const PLACE_LABELS = { 1: '♛ Champion', 2: '◈ Runner-Up', 3: '◇ Third Place' };
 const PLACE_COLORS = { 1: 'var(--crowned)', 2: '#C0C0D0', 3: '#CD7F32' };
 
+const PLACE_RGB = { 1: '255,215,0', 2: '200,200,224', 3: '205,127,50' };
+
 function WinnerCard({ winner, i }) {
   const wonAt = winner.wonAt?.seconds
     ? new Date(winner.wonAt.seconds * 1000)
     : winner.wonAt?.toDate ? winner.wonAt.toDate() : new Date(winner.wonAt || Date.now());
   const isChampion = winner.place === 1;
   const placeColor = PLACE_COLORS[winner.place] || 'var(--text-2)';
+  const placeRgb   = PLACE_RGB[winner.place] || '255,255,255';
 
   return (
     <div
-      className={isChampion ? 'dc-crowned' : 'glass'}
       style={{
-        borderRadius: 'var(--r-xl)', padding: 'clamp(20px, 3vw, 28px)',
-        display: 'flex', flexDirection: 'column', gap: 14,
-        animation: `fade-up 0.5s ease-out ${i * 0.06}s both`,
         position: 'relative', overflow: 'hidden',
-        transition: 'transform 0.25s',
+        display: 'flex', flexDirection: 'column', gap: 14,
+        padding: 'clamp(18px, 3vw, 26px) 22px clamp(16px, 2.5vw, 22px) 20px',
+        borderRadius: 0,
         cursor: 'default',
+        background: isChampion
+          ? 'rgba(255,215,0,0.04)'
+          : 'rgba(255,255,255,0.03)',
+        borderLeft: `3px solid rgba(${placeRgb},${isChampion ? 0.75 : 0.4})`,
+        borderTop: '1px solid rgba(255,255,255,0.06)',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        boxShadow: isChampion
+          ? `-8px 0 36px rgba(255,215,0,0.14), 0 8px 28px rgba(0,0,0,0.45)`
+          : `-4px 0 18px rgba(${placeRgb},0.08), 0 6px 24px rgba(0,0,0,0.4)`,
+        animation: `fade-up 0.5s ease-out ${i * 0.06}s both`,
+        transition: 'transform 0.2s, box-shadow 0.2s',
       }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = ''; }}
+      onMouseEnter={e => {
+        e.currentTarget.style.transform = 'translateY(-4px)';
+        e.currentTarget.style.boxShadow = isChampion
+          ? '-10px 0 50px rgba(255,215,0,0.22), 0 12px 36px rgba(0,0,0,0.5)'
+          : `-6px 0 28px rgba(${placeRgb},0.14), 0 10px 32px rgba(0,0,0,0.5)`;
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.transform = '';
+        e.currentTarget.style.boxShadow = '';
+      }}
     >
-      {isChampion && (
-        <div style={{
-          position: 'absolute', top: 0, left: '15%', right: '15%', height: 1,
-          background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.9), transparent)',
-        }} />
-      )}
+      {/* Corner cut */}
+      <div style={{
+        position: 'absolute', bottom: -1, right: -1, width: 22, height: 22,
+        background: 'var(--void)',
+        clipPath: 'polygon(0 100%, 100% 0, 100% 100%)',
+        zIndex: 10, pointerEvents: 'none',
+      }} />
+
+      {/* SOL won — big watermark */}
+      <div style={{
+        position: 'absolute', right: 28, bottom: 16,
+        fontFamily: 'var(--font-display)', fontWeight: 900, lineHeight: 1,
+        fontSize: '3.2rem',
+        color: `rgba(${placeRgb},0.055)`,
+        pointerEvents: 'none', userSelect: 'none',
+      }}>◎{(winner.solWon || 0).toFixed(1)}</div>
 
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, zIndex: 1 }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <span style={{
-            color: placeColor, fontSize: '0.72rem', fontWeight: 700,
-            fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
-            textShadow: isChampion ? '0 0 16px rgba(255,215,0,0.4)' : 'none',
+            color: placeColor, fontSize: '0.68rem', fontWeight: 700,
+            fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', textTransform: 'uppercase',
+            textShadow: isChampion ? '0 0 14px rgba(255,215,0,0.5)' : 'none',
           }}>
             {PLACE_LABELS[winner.place] || `#${winner.place}`}
           </span>
           {winner.mood && (
-            <span className={`tag mood-${winner.mood}`} style={{ fontSize: '0.65rem' }}>
+            <span className={`tag mood-${winner.mood}`} style={{ fontSize: '0.6rem' }}>
               {MOOD_EMOJI[winner.mood]} {winner.mood}
             </span>
           )}
         </div>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--text-3)', flexShrink: 0 }}>
-          Round #{winner.roundNumber}
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: 'var(--text-3)', flexShrink: 0 }}>
+          RND #{winner.roundNumber}
         </span>
       </div>
 
       {/* Title */}
       <h3 style={{
-        fontFamily: 'var(--font-display)', fontSize: 'clamp(0.88rem, 1.5vw, 1rem)',
-        fontWeight: 700, lineHeight: 1.3,
+        fontFamily: 'var(--font-display)', fontSize: 'clamp(0.86rem, 1.5vw, 1rem)',
+        fontWeight: 700, lineHeight: 1.28, zIndex: 1,
         color: isChampion ? 'var(--crowned)' : 'var(--text)',
-        textShadow: isChampion ? '0 0 20px rgba(255,215,0,0.15)' : 'none',
+        textShadow: isChampion ? '0 0 24px rgba(255,215,0,0.18)' : 'none',
       }}>{winner.title}</h3>
 
       {/* Story */}
       <p style={{
-        fontSize: '0.82rem', color: 'var(--text-2)', lineHeight: 1.6,
+        fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.62, zIndex: 1,
         display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
       }}>{winner.story}</p>
 
       {winner.fulfillmentProof && (
         <a href={winner.fulfillmentProof} target="_blank" rel="noopener noreferrer"
-          style={{
-            fontSize: '0.76rem', color: 'var(--alive)',
-            display: 'flex', alignItems: 'center', gap: 5,
-            textDecoration: 'none',
-          }}>
-          🌱 Fulfillment proof posted →
+          style={{ fontSize: '0.74rem', color: 'var(--alive)', display: 'flex', alignItems: 'center', gap: 5, zIndex: 1 }}>
+          🌱 Fulfillment proof →
         </a>
       )}
 
-      {/* Footer */}
+      {/* Perforated divider */}
       <div style={{
-        borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 14,
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10,
-      }}>
+        borderTop: `1px dashed rgba(${placeRgb},0.16)`,
+        margin: '0 -2px', zIndex: 1,
+      }} />
+
+      {/* Footer */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, zIndex: 1 }}>
         <Link to={`/profile/${winner.walletAddress}`} style={{
-          display: 'flex', alignItems: 'center', gap: 7,
-          color: 'var(--text-2)', fontSize: '0.8rem',
+          display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-2)', fontSize: '0.78rem',
         }}>
           <div style={{
-            width: 22, height: 22, borderRadius: '50%',
+            width: 20, height: 20, borderRadius: '50%',
             background: `linear-gradient(135deg, hsl(${(winner.walletAddress?.charCodeAt(0) || 0) * 7 % 360},70%,55%), hsl(${(winner.walletAddress?.charCodeAt(2) || 0) * 11 % 360},70%,45%))`,
-            border: isChampion ? '1px solid rgba(255,215,0,0.3)' : 'none',
           }} />
           @{winner.username}
         </Link>
 
-        <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
           <div style={{ textAlign: 'right' }}>
-            <p style={{ fontFamily: 'var(--font-mono)', color: 'var(--gold)', fontWeight: 700, fontSize: '0.95rem' }}>
-              ◎ {(winner.solWon || 0).toFixed(3)}
+            <p style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)', fontWeight: 900, fontSize: '1.1rem', lineHeight: 1 }}>
+              ◎{(winner.solWon || 0).toFixed(3)}
             </p>
-            <p style={{ fontSize: '0.65rem', color: 'var(--text-3)' }}>SOL won</p>
+            <p style={{ fontSize: '0.58rem', color: 'var(--text-3)', fontFamily: 'var(--font-mono)', letterSpacing: '0.1em' }}>SOL WON</p>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.95rem', fontWeight: 700 }}>
-              ★ {winner.beliefCount || 0}
+            <p style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '1rem', lineHeight: 1 }}>
+              ★{winner.beliefCount || 0}
             </p>
-            <p style={{ fontSize: '0.65rem', color: 'var(--text-3)' }}>believers</p>
+            <p style={{ fontSize: '0.58rem', color: 'var(--text-3)', fontFamily: 'var(--font-mono)', letterSpacing: '0.1em' }}>BELIEVERS</p>
           </div>
         </div>
       </div>
 
-      <p style={{ fontSize: '0.68rem', color: 'var(--text-3)', fontFamily: 'var(--font-mono)' }}>
+      <p style={{ fontSize: '0.62rem', color: 'var(--text-3)', fontFamily: 'var(--font-mono)', zIndex: 1 }}>
         {formatDistanceToNow(wonAt, { addSuffix: true })}
       </p>
     </div>
